@@ -14,6 +14,9 @@ from models import (
 from services.openalex import search_openalex
 from services.pubmed import search_pubmed
 from services.europe_pmc import search_europe_pmc
+from services.semantic_scholar import search_semantic_scholar
+from services.crossref import search_crossref
+from services.biorxiv import search_biorxiv
 from services.pubchem import fetch_compound_detail
 from services.llm_extractor import extract_phyto_data
 from services.cache import search_cache
@@ -59,16 +62,15 @@ async def enrich_card_compounds(card: PlantCard) -> PlantCard:
     if not card.bioactive_compounds:
         return card
 
-    # Take up to 4 top unique compounds per card to enrich
     top_compounds = card.bioactive_compounds[:4]
     tasks = [fetch_compound_detail(name) for name in top_compounds]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     details: List[CompoundDetail] = []
     for res in results:
         if isinstance(res, CompoundDetail):
             details.append(res)
-            
+
     card.compound_details = details
     return card
 
@@ -84,8 +86,6 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
         grouped[part].append(item)
 
     cards: List[PlantCard] = []
-
-    # Clean query display name
     clean_plant_name = query.strip().title()
 
     for part, items in grouped.items():
@@ -110,7 +110,6 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
             total_conf += it.extraction.confidence_score
 
         avg_confidence = round(total_conf / len(items), 2) if items else 0.8
-
         card_id = f"{re.sub(r'[^a-zA-Z0-9]', '_', clean_plant_name.lower())}_{part.lower().replace(' ', '_')}"
 
         cards.append(
@@ -129,7 +128,6 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
             )
         )
 
-    # Sort cards by paper count descending, then confidence descending
     cards.sort(key=lambda c: (c.paper_count, c.confidence_score), reverse=True)
     return cards
 
@@ -138,7 +136,7 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
 async def search_botanical_pharmacology(req: SearchRequest):
     """
     Core search endpoint:
-    1. Queries OpenAlex, PubMed, and Europe PMC in parallel
+    1. Queries PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv concurrently
     2. Deduplicates paper records across sources
     3. Extracts structured phytopharmacology records via LLM/NLP
     4. Aggregates records into interactive PlantCards grouped by plant part
@@ -152,14 +150,12 @@ async def search_botanical_pharmacology(req: SearchRequest):
     # Check Cache
     cache_key = f"{query_clean.lower()}"
     cached_data = search_cache.get(cache_key)
-    
+
     if cached_data is not None:
         cards: List[PlantCard] = cached_data.get("cards", [])
         total_papers = cached_data.get("total_papers", 0)
-        
-        # Apply filters to cached cards
+
         filtered_cards = filter_cards(cards, req)
-        
         elapsed = round((time.time() - start_time) * 1000, 1)
         return SearchResponse(
             query=query_clean,
@@ -175,14 +171,21 @@ async def search_botanical_pharmacology(req: SearchRequest):
             extraction_engine="gpt-4o-mini" if os.getenv("OPENAI_API_KEY") else "nlp-heuristic"
         )
 
-    # Concurrently search OpenAlex, PubMed, and Europe PMC
-    limit_per_source = max(4, req.limit // 3)
-    openalex_task = asyncio.create_task(search_openalex(query_clean, limit=limit_per_source))
+    # Concurrently query 6 scientific databases
+    limit_per_source = max(3, req.limit // 5)
     pubmed_task = asyncio.create_task(search_pubmed(query_clean, limit=limit_per_source))
+    openalex_task = asyncio.create_task(search_openalex(query_clean, limit=limit_per_source))
     europe_pmc_task = asyncio.create_task(search_europe_pmc(query_clean, limit=limit_per_source))
+    s2_task = asyncio.create_task(search_semantic_scholar(query_clean, limit=limit_per_source))
+    crossref_task = asyncio.create_task(search_crossref(query_clean, limit=limit_per_source))
+    biorxiv_task = asyncio.create_task(search_biorxiv(query_clean, limit=limit_per_source))
 
-    results = await asyncio.gather(openalex_task, pubmed_task, europe_pmc_task, return_exceptions=True)
-    
+    results = await asyncio.gather(
+        pubmed_task, openalex_task, europe_pmc_task,
+        s2_task, crossref_task, biorxiv_task,
+        return_exceptions=True
+    )
+
     raw_papers: List[PaperRecord] = []
     for res in results:
         if isinstance(res, list):
@@ -192,7 +195,7 @@ async def search_botanical_pharmacology(req: SearchRequest):
 
     # Deduplicate
     unique_papers = deduplicate_papers(raw_papers)
-    
+
     if not unique_papers:
         elapsed = round((time.time() - start_time) * 1000, 1)
         return SearchResponse(
@@ -212,7 +215,6 @@ async def search_botanical_pharmacology(req: SearchRequest):
     # Run extraction
     extractions = await extract_phyto_data(unique_papers)
 
-    # Combine into PaperExtraction objects
     paper_extractions: List[PaperExtraction] = []
     for paper, ext in zip(unique_papers, extractions):
         paper_extractions.append(PaperExtraction(paper=paper, extraction=ext))
@@ -231,9 +233,7 @@ async def search_botanical_pharmacology(req: SearchRequest):
         "total_papers": len(unique_papers)
     })
 
-    # Apply request filters
     filtered_cards = filter_cards(cards, req)
-
     elapsed = round((time.time() - start_time) * 1000, 1)
     return SearchResponse(
         query=query_clean,
@@ -254,12 +254,10 @@ def filter_cards(cards: List[PlantCard], req: SearchRequest) -> List[PlantCard]:
     """Applies tissue, bioactivity, and confidence filters to cards."""
     filtered = cards
 
-    # Tissue filter
     if req.tissue_filter:
         req_parts_lower = [p.lower() for p in req.tissue_filter]
         filtered = [c for c in filtered if c.plant_part.lower() in req_parts_lower]
 
-    # Bioactivity filter
     if req.bioactivity_filter:
         req_bio_lower = [b.lower() for b in req.bioactivity_filter]
         filtered = [
@@ -267,7 +265,6 @@ def filter_cards(cards: List[PlantCard], req: SearchRequest) -> List[PlantCard]:
             if any(b.lower() in req_bio_lower for b in c.bioactivities)
         ]
 
-    # Min confidence
     if req.min_confidence and req.min_confidence > 0:
         filtered = [c for c in filtered if c.confidence_score >= req.min_confidence]
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, CheckCircle2, BookOpen, Database, Globe } from 'lucide-react';
+import { ExternalLink, CheckCircle2, BookOpen, Database, Globe, BrainCircuit, FileText, FlaskConical } from 'lucide-react';
 
 interface SourceBadgeProps {
   source: string;
@@ -12,17 +12,26 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({ source, doi, url, isPe
   const srcLower = source.toLowerCase();
   const isPubMed = srcLower.includes('pubmed');
   const isEuropePMC = srcLower.includes('europe pmc') || srcLower.includes('epmc');
+  const isS2 = srcLower.includes('semantic scholar') || srcLower.includes('s2');
+  const isCrossref = srcLower.includes('crossref');
+  const isBioRxiv = srcLower.includes('biorxiv') || srcLower.includes('medrxiv') || srcLower.includes('preprint');
   const targetUrl = url || (doi ? `https://doi.org/${doi}` : null);
 
   const getSourceClass = () => {
     if (isPubMed) return 'pubmed';
     if (isEuropePMC) return 'europepmc';
+    if (isS2) return 'semanticscholar';
+    if (isCrossref) return 'crossref';
+    if (isBioRxiv) return 'biorxiv';
     return 'openalex';
   };
 
   const getSourceIcon = () => {
     if (isPubMed) return <BookOpen size={12} />;
     if (isEuropePMC) return <Globe size={12} />;
+    if (isS2) return <BrainCircuit size={12} />;
+    if (isCrossref) return <FileText size={12} />;
+    if (isBioRxiv) return <FlaskConical size={12} />;
     return <Database size={12} />;
   };
 
@@ -33,10 +42,14 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({ source, doi, url, isPe
         {source}
       </span>
 
-      {isPeerReviewed && (
+      {isPeerReviewed ? (
         <span className="source-badge verified" title="Peer-reviewed scholarly article">
           <CheckCircle2 size={12} />
           Peer-Reviewed
+        </span>
+      ) : (
+        <span className="source-badge preprint-badge" title="Preprint - Early research prior to peer review">
+          Preprint
         </span>
       )}
 

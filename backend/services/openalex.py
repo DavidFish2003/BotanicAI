@@ -39,7 +39,7 @@ async def search_openalex(query: str, limit: int = 15) -> List[PaperRecord]:
     }
 
     headers = {
-        "User-Agent": "BotanicAI/1.0 (https://botanicai.local; mailto:research@botanicai.local)"
+        "User-Agent": "BotanicAI/1.2 (https://botanicai.local; mailto:research@botanicai.local)"
     }
 
     try:

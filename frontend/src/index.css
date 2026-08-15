@@ -563,6 +563,30 @@ h1, h2, h3, h4, h5, h6 {
   color: #a5f3fc;
 }
 
+.source-badge.semanticscholar {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fef08a;
+}
+
+.source-badge.crossref {
+  background: rgba(236, 72, 153, 0.15);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  color: #fbcfe8;
+}
+
+.source-badge.biorxiv {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.source-badge.preprint-badge {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
 .source-badge.verified {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(52, 211, 153, 0.3);

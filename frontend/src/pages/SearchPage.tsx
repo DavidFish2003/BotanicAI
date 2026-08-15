@@ -52,9 +52,7 @@ export const SearchPage: React.FC = () => {
         </h1>
 
         <p style={{ maxWidth: '680px', margin: '0 auto', fontSize: '1.05rem', color: '#94a3b8' }}>
-          Mine scientific literature from <strong style={{ color: '#ecfdf5' }}>PubMed</strong> and{' '}
-          <strong style={{ color: '#ecfdf5' }}>OpenAlex</strong> to extract structured phytopharmacological data,
-          bioactivities, and active phytomolecules using LLMs.
+          Mine scientific literature across <strong style={{ color: '#ecfdf5' }}>PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref & bioRxiv</strong> to extract structured phytopharmacological data, bioactivities, and molecular structures.
         </p>
       </header>
 
@@ -249,10 +247,10 @@ export const SearchPage: React.FC = () => {
               <Database size={22} />
             </div>
             <h4 style={{ fontSize: '1.15rem', color: '#fff', marginBottom: '0.5rem' }}>
-              Dual Literature Mining
+              6-Database Literature Mining
             </h4>
             <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
-              Simultaneously searches PubMed (NCBI Entrez) and OpenAlex for pharmacological, phytochemistry, and bioactive compound publications.
+              Simultaneously searches PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv for pharmacological, phytochemistry, and bioactive compound publications.
             </p>
           </div>
 

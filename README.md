@@ -1,0 +1,64 @@
+# 🌿 BotanicAI - Botanical Pharmacology & Phytochemistry Search Engine
+
+**BotanicAI (v1.2)** is an AI-powered search engine and literature mining platform designed to aggregate, extract, and categorize scientific research on botanical pharmacology, phytochemistry, and bioactive plant extracts.
+
+---
+
+## 🚀 What's New in Version 1.2
+
+- **allenai / Semantic Scholar Graph API Integration**: Added deep literature search across 200M+ papers powered by the Allen Institute for AI.
+- **Crossref REST API Integration**: Direct retrieval of DOI metadata and publisher abstracts from over 150 million registered cross-publisher publications.
+- **bioRxiv & medRxiv Preprint Engine**: Seamless discovery of early-stage pharmacological and phytochemistry findings prior to formal peer-reviewed journal publication.
+- **Unified 6-Database Scientific Aggregator**: Concurrent async querying across PubMed (NCBI), OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv/medRxiv.
+- **Enhanced UI Source Badges & Indicators**: Custom visual badges, icons, DOI links, and peer-review vs preprint status badges on all evidence cards and modal dialogs.
+
+---
+
+## ✨ Features
+
+- 🔬 **6-Database Literature Mining**: Asynchronously searches PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv/medRxiv.
+- 🧪 **Structured Phytochemistry**: Extracts active compounds (*quercetin, rosmarinic acid, curcumin*), extract types, and pharmacological mechanisms.
+- 🧬 **PubChem Chemical Data & 2D Structures**: Automatically enriches top extracted bioactive compounds with molecular formulas, molecular weight, IUPAC names, and 2D chemical structure renders.
+- 🌱 **Tissue-Specific Grouping**: Categorizes evidence into interactive PlantCards grouped by plant part (*leaves, roots, bark, seeds, flowers, rhizomes, whole plant*).
+- ⚡ **LLM & NLP Extraction Pipeline**: Utilizes OpenAI GPT-4o-mini when an API key is available, falling back to a robust NLP heuristic parser.
+- 💎 **Modern UI / UX**: Dark mode interface with glassmorphism, fluid animations, dynamic search filtering, and responsive evidence modals.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend**: Python 3.11+, FastAPI, HTTPX (Async HTTP), Pydantic v2, Uvicorn
+- **Frontend**: React 19, TypeScript, Vite 8, Lucide Icons, Vanilla CSS Design Tokens
+- **External Data APIs**: PubMed E-utilities, OpenAlex, Europe PMC, Semantic Scholar, Crossref, bioRxiv (Europe PMC PPR), PubChem REST API
+
+---
+
+## 💻 Getting Started
+
+### 1. Backend Setup
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate # On Windows
+pip install -r requirements.txt
+python main.py
+```
+
+*Backend runs at http://localhost:8000*
+
+### 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+*Frontend runs at http://localhost:5173*
+
+---
+
+## 📄 License
+
+MIT License. Developed for botanical pharmacology and phytochemical research.
