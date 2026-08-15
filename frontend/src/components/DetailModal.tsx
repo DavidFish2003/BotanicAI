@@ -38,8 +38,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
               <span className="card-tissue-badge">
                 <Leaf size={12} />
                 {card.plant_part}
@@ -49,15 +49,15 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
                 <span>{(card.confidence_score * 100).toFixed(0)}% Confidence</span>
               </div>
             </div>
-            <h2 style={{ fontSize: '1.7rem', color: '#fff', fontStyle: 'italic' }}>
+            <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.7rem)', color: '#fff', fontStyle: 'italic', wordBreak: 'break-word' }}>
               {card.plant_name}
             </h2>
-            <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.2rem' }}>
+            <p style={{ fontSize: 'clamp(0.78rem, 2vw, 0.85rem)', color: '#94a3b8', marginTop: '0.2rem' }}>
               Pharmacological profile supported by {card.paper_count} peer-reviewed scientific {card.paper_count === 1 ? 'publication' : 'publications'}
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={handleExportJSON}
@@ -129,7 +129,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
                 <Atom size={16} style={{ color: '#34d399' }} /> PubChem Molecular Profiles ({card.compound_details!.length})
               </h4>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
                 {card.compound_details!.map((cd) => (
                   <div
                     key={cd.name}
