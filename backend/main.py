@@ -39,12 +39,15 @@ app = FastAPI(
 )
 
 # CORS configuration
-origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000")
+origins_env = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,https://usebotanicai.netlify.app"
+)
 allowed_origins = [o.strip() for o in origins_env.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins if allowed_origins else ["*"],
+    allow_origins=["*"] if os.getenv("ALLOW_ALL_ORIGINS") == "true" else allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

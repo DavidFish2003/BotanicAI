@@ -3,6 +3,7 @@
   publish = "dist"
   command = "npm run build"
 
+# Single Page Application fallback routing
 [[redirects]]
   from = "/*"
   to = "/index.html"

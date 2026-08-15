@@ -59,6 +59,30 @@ npm run dev
 
 ---
 
+## 🌐 Deploying to Netlify & Cloud Backend
+
+BotanicAI consists of a **FastAPI backend** (Python) and a **Vite React frontend**.
+
+When deploying the frontend to Netlify (`https://usebotanicai.netlify.app`), the frontend needs to connect to a running backend instance:
+
+### Step 1: Deploy Backend (Render / Railway / Fly.io)
+Deploy the `backend/` directory to a cloud provider such as [Render](https://render.com), [Railway](https://railway.app), or [Fly.io](https://fly.io):
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- Set Environment Variables:
+  - `OPENAI_API_KEY` (Optional for GPT extraction)
+  - `CORS_ORIGINS` = `https://usebotanicai.netlify.app`
+
+### Step 2: Configure Netlify Environment Variable
+In your Netlify site dashboard:
+1. Go to **Site configuration** -> **Environment variables**
+2. Add a new variable:
+   - **Key**: `VITE_API_URL`
+   - **Value**: `https://your-backend-service.onrender.com` (your live backend URL)
+3. Trigger a **Re-deploy** of your Netlify site.
+
+---
+
 ## 📄 License
 
 MIT License. Developed for botanical pharmacology and phytochemical research.
