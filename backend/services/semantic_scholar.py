@@ -22,7 +22,7 @@ async def search_semantic_scholar(query: str, limit: int = 10) -> List[PaperReco
     }
 
     headers = {
-        "User-Agent": "BotanicAI/1.2 (https://botanicai.local; mailto:research@botanicai.local)"
+        "User-Agent": "BotanicAI/1.3 (https://botanicai.local; mailto:research@botanicai.local)"
     }
 
     try:

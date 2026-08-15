@@ -33,7 +33,7 @@ async def search_crossref(query: str, limit: int = 10) -> List[PaperRecord]:
     }
 
     headers = {
-        "User-Agent": "BotanicAI/1.0 (https://botanicai.local; mailto:research@botanicai.local)"
+        "User-Agent": "BotanicAI/1.3 (https://botanicai.local; mailto:research@botanicai.local)"
     }
 
     try:

@@ -23,7 +23,7 @@ async def search_biorxiv(query: str, limit: int = 10) -> List[PaperRecord]:
     }
 
     headers = {
-        "User-Agent": "BotanicAI/1.2 (https://botanicai.local; mailto:research@botanicai.local)"
+        "User-Agent": "BotanicAI/1.3 (https://botanicai.local; mailto:research@botanicai.local)"
     }
 
     try:

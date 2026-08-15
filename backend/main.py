@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="BotanicAI Pharmacology API",
     description="Scientific literature mining and LLM-powered phytochemistry extraction API",
-    version="1.2.0",
+    version="1.3.0",
     lifespan=lifespan
 )
 
@@ -63,7 +63,7 @@ async def health_check():
     """Health check endpoint to verify backend status and LLM configuration."""
     return HealthResponse(
         status="ok",
-        version="1.2.0",
+        version="1.3.0",
         llm_configured=bool(os.getenv("OPENAI_API_KEY", "").strip()),
         service="BotanicAI Backend"
     )

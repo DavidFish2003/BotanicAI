@@ -32,7 +32,7 @@ async def search_pubmed(query: str, limit: int = 15) -> List[PaperRecord]:
         params["api_key"] = ncbi_api_key
 
     headers = {
-        "User-Agent": "BotanicAI/1.2 (mailto:research@botanicai.local)"
+        "User-Agent": "BotanicAI/1.3 (mailto:research@botanicai.local)"
     }
 
     try:

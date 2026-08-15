@@ -1,16 +1,15 @@
 # 🌿 BotanicAI - Botanical Pharmacology & Phytochemistry Search Engine
 
-**BotanicAI (v1.2)** is an AI-powered search engine and literature mining platform designed to aggregate, extract, and categorize scientific research on botanical pharmacology, phytochemistry, and bioactive plant extracts.
+**BotanicAI (v1.3)** is an AI-powered search engine and literature mining platform designed to aggregate, extract, and categorize scientific research on botanical pharmacology, phytochemistry, and bioactive plant extracts.
 
 ---
 
-## 🚀 What's New in Version 1.2
+## 🚀 What's New in Version 1.3
 
-- **allenai / Semantic Scholar Graph API Integration**: Added deep literature search across 200M+ papers powered by the Allen Institute for AI.
-- **Crossref REST API Integration**: Direct retrieval of DOI metadata and publisher abstracts from over 150 million registered cross-publisher publications.
-- **bioRxiv & medRxiv Preprint Engine**: Seamless discovery of early-stage pharmacological and phytochemistry findings prior to formal peer-reviewed journal publication.
-- **Unified 6-Database Scientific Aggregator**: Concurrent async querying across PubMed (NCBI), OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv/medRxiv.
-- **Enhanced UI Source Badges & Indicators**: Custom visual badges, icons, DOI links, and peer-review vs preprint status badges on all evidence cards and modal dialogs.
+- **Full Mobile Responsiveness & Multi-Device Scaling**: Complete fluid design system adaptation for smartphones, tablets, laptops, and desktop displays.
+- **Fluid Typography & Adaptive Touch Targets**: CSS `clamp()` typography and input field sizing (`16px` touch minimum) preventing unwanted iOS browser zooming.
+- **Robust API URL Sanitization**: Auto-formatting and endpoint resolution for cloud backend hosting URLs (`VITE_API_URL`) on Netlify.
+- **6-Database Literature Aggregator**: Concurrent async literature mining across PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv/medRxiv.
 
 ---
 
