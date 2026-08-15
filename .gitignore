@@ -1,0 +1,29 @@
+# Python / Virtual Environment
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.output/
+.vite/
+*.log
+
+# Netlify & IDEs
+.netlify/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

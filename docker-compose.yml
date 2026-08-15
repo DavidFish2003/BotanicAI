@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: botanic_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: botanic_backend
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NCBI_API_KEY=${NCBI_API_KEY}
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: botanic_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  redis_data:
