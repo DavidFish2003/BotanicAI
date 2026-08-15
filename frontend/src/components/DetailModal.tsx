@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import type { PlantCardData } from '../types';
 import { SourceBadge } from './SourceBadge';
-import { X, Leaf, FlaskConical, BookOpen, Download, ShieldCheck, Activity, Calendar } from 'lucide-react';
+import { X, Leaf, FlaskConical, BookOpen, Download, ShieldCheck, Activity, Calendar, ExternalLink, Atom } from 'lucide-react';
 
 interface DetailModalProps {
   card: PlantCardData | null;
@@ -30,6 +30,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
     downloadAnchor.click();
     downloadAnchor.remove();
   };
+
+  const hasCompoundDetails = card.compound_details && card.compound_details.length > 0;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -119,6 +121,70 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
               </div>
             </div>
           </div>
+
+          {/* PubChem Chemical Structures Section */}
+          {hasCompoundDetails && (
+            <div style={{ background: 'rgba(15, 30, 22, 0.6)', border: '1px solid rgba(52, 211, 153, 0.2)', borderRadius: '12px', padding: '1.25rem' }}>
+              <h4 style={{ fontSize: '0.9rem', color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Atom size={16} style={{ color: '#34d399' }} /> PubChem Molecular Profiles ({card.compound_details!.length})
+              </h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                {card.compound_details!.map((cd) => (
+                  <div
+                    key={cd.name}
+                    style={{
+                      background: 'rgba(5, 15, 10, 0.7)',
+                      border: '1px solid rgba(52, 211, 153, 0.15)',
+                      borderRadius: '10px',
+                      padding: '0.85rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.85rem'
+                    }}
+                  >
+                    {cd.image_url && (
+                      <div style={{ background: '#fff', borderRadius: '8px', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img
+                          src={cd.image_url}
+                          alt={cd.name}
+                          style={{ width: '64px', height: '64px', objectFit: 'contain' }}
+                        />
+                      </div>
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        {cd.name}
+                      </div>
+                      {cd.molecular_formula && (
+                        <div style={{ fontSize: '0.78rem', color: '#34d399', fontFamily: 'monospace' }}>
+                          {cd.molecular_formula} {cd.molecular_weight && `(${cd.molecular_weight} g/mol)`}
+                        </div>
+                      )}
+                      {cd.pubchem_url && (
+                        <a
+                          href={cd.pubchem_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontSize: '0.73rem',
+                            color: '#06b6d4',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.2rem',
+                            marginTop: '0.25rem',
+                            textDecoration: 'none'
+                          }}
+                        >
+                          PubChem CID {cd.cid} <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Paper List */}
           <div>

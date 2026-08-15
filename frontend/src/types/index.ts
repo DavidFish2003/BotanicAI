@@ -3,7 +3,7 @@ export interface PaperRecord {
   title: string;
   abstract: string;
   doi?: string | null;
-  source: string; // "PubMed" | "OpenAlex"
+  source: string; // "PubMed" | "OpenAlex" | "Europe PMC"
   year?: number | null;
   journal?: string | null;
   authors?: string[];
@@ -27,12 +27,24 @@ export interface PaperExtraction {
   extraction: PhytoExtraction;
 }
 
+export interface CompoundDetail {
+  name: string;
+  cid?: number | null;
+  molecular_formula?: string | null;
+  molecular_weight?: number | null;
+  iupac_name?: string | null;
+  smiles?: string | null;
+  image_url?: string | null;
+  pubchem_url?: string | null;
+}
+
 export interface PlantCardData {
   id: string;
   plant_name: string;
   plant_part: string;
   bioactivities: string[];
   bioactive_compounds: string[];
+  compound_details?: CompoundDetail[];
   confidence_score: number;
   paper_count: number;
   papers: PaperExtraction[];

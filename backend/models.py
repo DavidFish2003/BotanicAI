@@ -11,11 +11,11 @@ class SearchRequest(BaseModel):
 
 
 class PaperRecord(BaseModel):
-    id: str = Field(..., description="Unique paper identifier (DOI or PubMed ID or OpenAlex ID)")
+    id: str = Field(..., description="Unique paper identifier (DOI or PubMed ID or OpenAlex ID or Europe PMC ID)")
     title: str = Field(..., description="Paper title")
     abstract: str = Field(..., description="Paper abstract text")
     doi: Optional[str] = Field(default=None, description="Digital Object Identifier")
-    source: str = Field(..., description="Source repository (e.g. 'PubMed', 'OpenAlex')")
+    source: str = Field(..., description="Source repository (e.g. 'PubMed', 'OpenAlex', 'Europe PMC')")
     year: Optional[int] = Field(default=None, description="Publication year")
     journal: Optional[str] = Field(default=None, description="Journal or venue name")
     authors: Optional[List[str]] = Field(default_factory=list, description="List of authors")
@@ -24,18 +24,29 @@ class PaperRecord(BaseModel):
 
 
 class PhytoExtraction(BaseModel):
-    plant_part: str = Field(default="Whole Plant", description="Identified plant tissue/part (e.g., Leaf, Root, Bark, Seed, Flower, Stem, Fruit, Rhizome, Aerial parts, Whole Plant)")
-    bioactivity: List[str] = Field(default_factory=list, description="Pharmacological bioactivities (e.g., Antioxidant, Anti-inflammatory, Antimicrobial, Neuroprotective, Cytotoxic)")
-    bioactive_compounds: List[str] = Field(default_factory=list, description="Extracted phytochemical compounds (e.g., Quercetin, Rosmarinic acid, Curcumin)")
+    plant_part: str = Field(default="Whole Plant", description="Identified plant tissue/part")
+    bioactivity: List[str] = Field(default_factory=list, description="Pharmacological bioactivities")
+    bioactive_compounds: List[str] = Field(default_factory=list, description="Extracted phytochemical compounds")
     confidence_score: float = Field(default=0.8, ge=0.0, le=1.0, description="Extraction confidence score")
     extraction_method: str = Field(default="llm", description="Method used ('gpt-4o-mini' or 'nlp-heuristic')")
     mechanisms_of_action: Optional[List[str]] = Field(default_factory=list, description="Mechanisms of action mentioned in abstract")
-    extract_type: Optional[str] = Field(default=None, description="Type of extract used (e.g. ethanolic extract, essential oil, aqueous extract)")
+    extract_type: Optional[str] = Field(default=None, description="Type of extract used")
 
 
 class PaperExtraction(BaseModel):
     paper: PaperRecord
     extraction: PhytoExtraction
+
+
+class CompoundDetail(BaseModel):
+    name: str
+    cid: Optional[int] = None
+    molecular_formula: Optional[str] = None
+    molecular_weight: Optional[float] = None
+    iupac_name: Optional[str] = None
+    smiles: Optional[str] = None
+    image_url: Optional[str] = None
+    pubchem_url: Optional[str] = None
 
 
 class PlantCard(BaseModel):
@@ -44,6 +55,7 @@ class PlantCard(BaseModel):
     plant_part: str = Field(..., description="Tissue / plant part")
     bioactivities: List[str] = Field(default_factory=list, description="Aggregated unique bioactivities")
     bioactive_compounds: List[str] = Field(default_factory=list, description="Aggregated unique compounds")
+    compound_details: Optional[List[CompoundDetail]] = Field(default_factory=list, description="Enriched chemical compound metadata from PubChem")
     confidence_score: float = Field(..., ge=0.0, le=1.0, description="Average confidence score across supporting papers")
     paper_count: int = Field(default=1, description="Number of supporting papers")
     papers: List[PaperExtraction] = Field(default_factory=list, description="Detailed supporting papers and extractions")

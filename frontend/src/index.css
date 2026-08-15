@@ -557,6 +557,12 @@ h1, h2, h3, h4, h5, h6 {
   color: #d8b4fe;
 }
 
+.source-badge.europepmc {
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #a5f3fc;
+}
+
 .source-badge.verified {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(52, 211, 153, 0.3);

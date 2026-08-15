@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, CheckCircle2, BookOpen, Database } from 'lucide-react';
+import { ExternalLink, CheckCircle2, BookOpen, Database, Globe } from 'lucide-react';
 
 interface SourceBadgeProps {
   source: string;
@@ -9,13 +9,27 @@ interface SourceBadgeProps {
 }
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({ source, doi, url, isPeerReviewed = true }) => {
-  const isPubMed = source.toLowerCase().includes('pubmed');
+  const srcLower = source.toLowerCase();
+  const isPubMed = srcLower.includes('pubmed');
+  const isEuropePMC = srcLower.includes('europe pmc') || srcLower.includes('epmc');
   const targetUrl = url || (doi ? `https://doi.org/${doi}` : null);
+
+  const getSourceClass = () => {
+    if (isPubMed) return 'pubmed';
+    if (isEuropePMC) return 'europepmc';
+    return 'openalex';
+  };
+
+  const getSourceIcon = () => {
+    if (isPubMed) return <BookOpen size={12} />;
+    if (isEuropePMC) return <Globe size={12} />;
+    return <Database size={12} />;
+  };
 
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-      <span className={`source-badge ${isPubMed ? 'pubmed' : 'openalex'}`}>
-        {isPubMed ? <BookOpen size={12} /> : <Database size={12} />}
+      <span className={`source-badge ${getSourceClass()}`}>
+        {getSourceIcon()}
         {source}
       </span>
 

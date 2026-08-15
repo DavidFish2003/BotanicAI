@@ -9,10 +9,12 @@ from collections import defaultdict
 from fastapi import APIRouter, HTTPException
 from models import (
     SearchRequest, SearchResponse, PlantCard,
-    PaperRecord, PaperExtraction, FilterOptions
+    PaperRecord, PaperExtraction, FilterOptions, CompoundDetail
 )
 from services.openalex import search_openalex
 from services.pubmed import search_pubmed
+from services.europe_pmc import search_europe_pmc
+from services.pubchem import fetch_compound_detail
 from services.llm_extractor import extract_phyto_data
 from services.cache import search_cache
 from api.filters import STANDARD_PLANT_PARTS, STANDARD_BIOACTIVITIES
@@ -50,6 +52,25 @@ def deduplicate_papers(papers: List[PaperRecord]) -> List[PaperRecord]:
         unique_papers.append(paper)
 
     return unique_papers
+
+
+async def enrich_card_compounds(card: PlantCard) -> PlantCard:
+    """Fetches PubChem chemical metadata for top extracted compounds in a card."""
+    if not card.bioactive_compounds:
+        return card
+
+    # Take up to 4 top unique compounds per card to enrich
+    top_compounds = card.bioactive_compounds[:4]
+    tasks = [fetch_compound_detail(name) for name in top_compounds]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    details: List[CompoundDetail] = []
+    for res in results:
+        if isinstance(res, CompoundDetail):
+            details.append(res)
+            
+    card.compound_details = details
+    return card
 
 
 def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -> List[PlantCard]:
@@ -99,6 +120,7 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
                 plant_part=part,
                 bioactivities=sorted(list(bioactivities_set)),
                 bioactive_compounds=sorted(list(compounds_set)),
+                compound_details=[],
                 confidence_score=avg_confidence,
                 paper_count=len(items),
                 papers=items,
@@ -116,10 +138,11 @@ def aggregate_into_cards(query: str, paper_extractions: List[PaperExtraction]) -
 async def search_botanical_pharmacology(req: SearchRequest):
     """
     Core search endpoint:
-    1. Queries OpenAlex and PubMed in parallel
-    2. Deduplicates paper records
+    1. Queries OpenAlex, PubMed, and Europe PMC in parallel
+    2. Deduplicates paper records across sources
     3. Extracts structured phytopharmacology records via LLM/NLP
     4. Aggregates records into interactive PlantCards grouped by plant part
+    5. Enriches top compounds with PubChem 2D images and molecular data
     """
     start_time = time.time()
     query_clean = req.query.strip()
@@ -152,12 +175,13 @@ async def search_botanical_pharmacology(req: SearchRequest):
             extraction_engine="gpt-4o-mini" if os.getenv("OPENAI_API_KEY") else "nlp-heuristic"
         )
 
-    # Concurrently search OpenAlex and PubMed
-    limit_per_source = max(5, req.limit // 2)
+    # Concurrently search OpenAlex, PubMed, and Europe PMC
+    limit_per_source = max(4, req.limit // 3)
     openalex_task = asyncio.create_task(search_openalex(query_clean, limit=limit_per_source))
     pubmed_task = asyncio.create_task(search_pubmed(query_clean, limit=limit_per_source))
+    europe_pmc_task = asyncio.create_task(search_europe_pmc(query_clean, limit=limit_per_source))
 
-    results = await asyncio.gather(openalex_task, pubmed_task, return_exceptions=True)
+    results = await asyncio.gather(openalex_task, pubmed_task, europe_pmc_task, return_exceptions=True)
     
     raw_papers: List[PaperRecord] = []
     for res in results:
@@ -195,6 +219,11 @@ async def search_botanical_pharmacology(req: SearchRequest):
 
     # Aggregate into PlantCards
     cards = aggregate_into_cards(query_clean, paper_extractions)
+
+    # Enrich top cards with PubChem molecular structure data
+    enrich_tasks = [enrich_card_compounds(c) for c in cards[:5]]
+    if enrich_tasks:
+        await asyncio.gather(*enrich_tasks, return_exceptions=True)
 
     # Cache full aggregated cards
     search_cache.set(cache_key, {
