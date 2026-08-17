@@ -118,9 +118,12 @@ export const PlantCard: React.FC<PlantCardProps> = ({ card, onSelect }) => {
 
       {/* Footer Area: Visual Confidence Gauge & Detail Button */}
       <div className="card-footer" style={{ marginTop: '0.75rem' }}>
-        <ConfidenceGauge score={card.confidence_score} size={38} strokeWidth={3.5} showLabel={true} />
+        <div id="tour-confidence-gauge">
+          <ConfidenceGauge score={card.confidence_score} size={38} strokeWidth={3.5} showLabel={true} />
+        </div>
 
         <button
+          id="tour-view-papers"
           type="button"
           className="view-evidence-btn"
           onClick={() => onSelect(card)}

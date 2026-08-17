@@ -5,6 +5,7 @@ import { FilterPanel } from '../components/FilterPanel';
 import { PlantCard } from '../components/PlantCard';
 import { DetailModal } from '../components/DetailModal';
 import { OnboardingTour } from '../components/OnboardingTour';
+import { SearchResultsTour } from '../components/SearchResultsTour';
 import {
   Leaf,
   FlaskConical,
@@ -48,7 +49,7 @@ export const SearchPage: React.FC = () => {
         </h1>
 
         <p style={{ maxWidth: '740px', margin: '0 auto', fontSize: '1.08rem', color: '#94a3b8', lineHeight: 1.6 }}>
-          Scan through over 500 million papers and find pharmacological data on any plant in seconds
+          Scan through over 200 million papers and find pharmacological data on any plant in seconds.
         </p>
       </header>
 
@@ -99,6 +100,9 @@ export const SearchPage: React.FC = () => {
           totalCards={filteredCards.length}
         />
       )}
+
+      {/* Auto-trigger post-results tour for first-time users */}
+      <SearchResultsTour hasResults={!loading && !!searchResponse} />
 
       {/* Loading Progress Bar & Skeletons */}
       {loading && (
