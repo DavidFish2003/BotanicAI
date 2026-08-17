@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { PlantCardData } from '../types';
-import { Leaf, FlaskConical, FileText, ChevronRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Leaf, FlaskConical, FileText, ChevronRight } from 'lucide-react';
+import { ConfidenceGauge } from './ConfidenceGauge';
 
 interface PlantCardProps {
   card: PlantCardData;
@@ -29,7 +30,7 @@ export const PlantCard: React.FC<PlantCardProps> = ({ card, onSelect }) => {
   return (
     <div className="plant-card">
       <div>
-        {/* Top Header: Tissue Badge & Confidence */}
+        {/* Top Header: Tissue Badge & Evidence Count */}
         <div className="card-header">
           <span className="card-tissue-badge">
             <Leaf size={12} />
@@ -77,12 +78,12 @@ export const PlantCard: React.FC<PlantCardProps> = ({ card, onSelect }) => {
           ))}
         </div>
 
-        {/* Bioactive Compounds Box */}
+        {/* Active Phytochemicals Box */}
         {card.bioactive_compounds.length > 0 && (
           <div className="compounds-section">
             <div className="compounds-title">
               <FlaskConical size={12} style={{ color: '#34d399' }} />
-              Extracted Phytochemicals ({card.bioactive_compounds.length})
+              Active Phytochemicals ({card.bioactive_compounds.length})
             </div>
             <div className="compound-pills-list">
               {visibleCompounds.map((comp) => (
@@ -115,38 +116,20 @@ export const PlantCard: React.FC<PlantCardProps> = ({ card, onSelect }) => {
         )}
       </div>
 
-      {/* Footer Area: Confidence Meter & Detail Button */}
-      <div>
-        <div className="confidence-meter" title={`Pharmacological Extraction Confidence: ${(card.confidence_score * 100).toFixed(0)}%`}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#94a3b8' }}>
-            <ShieldCheck size={13} style={{ color: '#10b981' }} />
-            <span>Confidence</span>
-          </div>
-          <div className="meter-track">
-            <div
-              className="meter-fill"
-              style={{ width: `${Math.round(card.confidence_score * 100)}%` }}
-            />
-          </div>
-          <span className="meter-text">{(card.confidence_score * 100).toFixed(0)}%</span>
-        </div>
+      {/* Footer Area: Visual Confidence Gauge & Detail Button */}
+      <div className="card-footer" style={{ marginTop: '0.75rem' }}>
+        <ConfidenceGauge score={card.confidence_score} size={38} strokeWidth={3.5} showLabel={true} />
 
-        <div className="card-footer">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: '#64748b' }}>
-            <Sparkles size={12} style={{ color: '#10b981' }} />
-            <span>LLM Structured Extraction</span>
-          </div>
-
-          <button
-            type="button"
-            className="view-evidence-btn"
-            onClick={() => onSelect(card)}
-          >
-            <span>View Papers</span>
-            <ChevronRight size={14} />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="view-evidence-btn"
+          onClick={() => onSelect(card)}
+        >
+          <span>View Papers</span>
+          <ChevronRight size={14} />
+        </button>
       </div>
     </div>
   );
 };
+

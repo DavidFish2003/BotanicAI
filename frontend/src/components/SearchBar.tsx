@@ -8,14 +8,38 @@ interface SearchBarProps {
   isLoading: boolean;
 }
 
+const BOTANICAL_EXAMPLES = [
+  'Withania somnifera',
+  'Curcuma longa',
+  'Ginkgo biloba',
+  'Rosmarinus officinalis',
+  'Panax ginseng',
+  'Cannabis sativa',
+  'Matricaria chamomilla',
+  'Salvia miltiorrhiza',
+  'Echinacea purpurea',
+  'Artemisia annua',
+  'Camellia sinensis',
+  'Zingiber officinale',
+  'Bacopa monnieri',
+  'Ocimum sanctum',
+  'Rhodiola rosea',
+  'Valeriana officinalis',
+  'Glycyrrhiza glabra',
+  'Hypericum perforatum',
+  'Astragalus membranaceus',
+  'Centella asiatica',
+  'Nigella sativa',
+  'Crocus sativus',
+  'Coptis chinensis',
+  'Silybum marianum',
+];
+
+// Exactly 3 botanical name examples
 const QUICK_SEARCH_EXAMPLES = [
   { name: 'Rosmarinus officinalis', label: 'Rosemary' },
   { name: 'Curcuma longa', label: 'Turmeric' },
   { name: 'Ginkgo biloba', label: 'Ginkgo' },
-  { name: 'Camellia sinensis', label: 'Green Tea' },
-  { name: 'Echinacea purpurea', label: 'Echinacea' },
-  { name: 'Zingiber officinale', label: 'Ginger' },
-  { name: 'Withania somnifera', label: 'Ashwagandha' },
 ];
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -25,10 +49,34 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   isLoading,
 }) => {
   const [inputVal, setInputVal] = useState(value);
+  const [placeholderExample, setPlaceholderExample] = useState(() => {
+    const idx1 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+    let idx2 = (idx1 + 1) % BOTANICAL_EXAMPLES.length;
+    let idx3 = (idx1 + 2) % BOTANICAL_EXAMPLES.length;
+    return `${BOTANICAL_EXAMPLES[idx1]}, ${BOTANICAL_EXAMPLES[idx2]}, ${BOTANICAL_EXAMPLES[idx3]}`;
+  });
 
   useEffect(() => {
     setInputVal(value);
   }, [value]);
+
+  // Periodically cycle random botanical plant names for the placeholder without extra text
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const idx1 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+      let idx2 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+      while (idx2 === idx1) {
+        idx2 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+      }
+      let idx3 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+      while (idx3 === idx1 || idx3 === idx2) {
+        idx3 = Math.floor(Math.random() * BOTANICAL_EXAMPLES.length);
+      }
+      setPlaceholderExample(`${BOTANICAL_EXAMPLES[idx1]}, ${BOTANICAL_EXAMPLES[idx2]}, ${BOTANICAL_EXAMPLES[idx3]}`);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +108,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             id="botanical-search-input"
             type="text"
             className="search-input"
-            placeholder="Search botanical species or genus (e.g., Rosmarinus officinalis, Curcuma longa)..."
+            placeholder={placeholderExample}
             value={inputVal}
             onChange={(e) => {
               setInputVal(e.target.value);
@@ -98,19 +146,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             {isLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
-                <span>Mining Literature...</span>
+                <span>Getting Data...</span>
               </>
             ) : (
               <>
                 <Search size={18} />
-                <span>Extract Pharmacology</span>
+                <span>Get Data</span>
               </>
             )}
           </button>
         </div>
       </form>
 
-      {/* Suggested Quick Searches */}
+      {/* Suggested Quick Searches (3 examples) */}
       <div className="quick-queries">
         <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
           <Sparkles size={13} style={{ color: '#f59e0b' }} /> Examples:
@@ -129,3 +177,5 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     </div>
   );
 };
+
+

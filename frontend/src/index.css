@@ -491,40 +491,58 @@ img, svg {
   max-width: 100%;
 }
 
-/* Confidence Meter */
-.confidence-meter {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 0.85rem;
-  width: 100%;
+/* Search Progress Bar (Loading State) */
+.search-loading-container {
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  padding: 0 1rem;
 }
 
-.meter-track {
-  flex: 1;
+.search-progress-track {
+  width: 100%;
   height: 6px;
-  background: rgba(30, 58, 42, 0.6);
+  background: rgba(10, 26, 17, 0.8);
+  border: 1px solid rgba(52, 211, 153, 0.2);
   border-radius: var(--radius-full);
   overflow: hidden;
   position: relative;
-  min-width: 60px;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
 }
 
-.meter-fill {
+.search-progress-bar {
+  width: 40%;
   height: 100%;
-  background: linear-gradient(90deg, #059669 0%, #10b981 60%, #34d399 100%);
+  background: linear-gradient(90deg, #059669 0%, #10b981 50%, #38bdf8 100%);
   border-radius: var(--radius-full);
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: searchBarScan 1.6s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.75);
 }
 
-.meter-text {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--accent-emerald-light);
-  font-family: var(--font-mono);
-  min-width: 38px;
+@keyframes searchBarScan {
+  0% {
+    left: -40%;
+    width: 30%;
+  }
+  50% {
+    width: 55%;
+  }
+  100% {
+    left: 100%;
+    width: 30%;
+  }
 }
+
+/* Confidence Gauge Styling */
+.confidence-gauge-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
 
 /* Sources & Card Footer */
 .card-footer {

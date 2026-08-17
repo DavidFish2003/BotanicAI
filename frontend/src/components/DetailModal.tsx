@@ -1,7 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import type { PlantCardData } from '../types';
 import { SourceBadge } from './SourceBadge';
-import { X, Leaf, FlaskConical, BookOpen, Download, ShieldCheck, Activity, Calendar, ExternalLink, Atom } from 'lucide-react';
+import { ConfidenceGauge } from './ConfidenceGauge';
+import { generatePlantReportPDF } from '../utils/pdfGenerator';
+import {
+  X,
+  Leaf,
+  FlaskConical,
+  BookOpen,
+  Download,
+  Activity,
+  Calendar,
+  ExternalLink,
+  Atom,
+  ArrowUpDown,
+  Loader2,
+} from 'lucide-react';
 
 interface DetailModalProps {
   card: PlantCardData | null;
@@ -9,6 +23,9 @@ interface DetailModalProps {
 }
 
 export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
+  const [sortOrder, setSortOrder] = useState<'latest' | 'earliest'>('latest');
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -19,16 +36,30 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  const sortedPapers = useMemo(() => {
+    if (!card?.papers) return [];
+    return [...card.papers].sort((a, b) => {
+      const yearA = a.paper.year || (sortOrder === 'latest' ? -Infinity : Infinity);
+      const yearB = b.paper.year || (sortOrder === 'latest' ? -Infinity : Infinity);
+      if (sortOrder === 'latest') {
+        return yearB - yearA;
+      } else {
+        return yearA - yearB;
+      }
+    });
+  }, [card?.papers, sortOrder]);
+
   if (!card) return null;
 
-  const handleExportJSON = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(card, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `${card.plant_name}_${card.plant_part}_pharmacology.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+  const handleSaveReport = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      await generatePlantReportPDF(card);
+    } catch (err) {
+      console.error('Failed to generate PDF report:', err);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const hasCompoundDetails = card.compound_details && card.compound_details.length > 0;
@@ -39,15 +70,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
         {/* Header */}
         <div className="modal-header">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
               <span className="card-tissue-badge">
                 <Leaf size={12} />
                 {card.plant_part}
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#34d399' }}>
-                <ShieldCheck size={14} />
-                <span>{(card.confidence_score * 100).toFixed(0)}% Confidence</span>
-              </div>
+              <ConfidenceGauge score={card.confidence_score} size={34} strokeWidth={3} showLabel={true} />
             </div>
             <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.7rem)', color: '#fff', fontStyle: 'italic', wordBreak: 'break-word' }}>
               {card.plant_name}
@@ -60,24 +88,36 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button
               type="button"
-              onClick={handleExportJSON}
+              onClick={handleSaveReport}
+              disabled={isGeneratingPDF}
               style={{
-                background: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid rgba(52, 211, 153, 0.3)',
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.3) 100%)',
+                border: '1px solid rgba(52, 211, 153, 0.4)',
                 color: '#6ee7b7',
-                padding: '0.45rem 0.85rem',
+                padding: '0.5rem 0.95rem',
                 borderRadius: '8px',
-                fontSize: '0.8rem',
+                fontSize: '0.82rem',
                 fontWeight: 600,
-                cursor: 'pointer',
+                cursor: isGeneratingPDF ? 'wait' : 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.35rem',
+                gap: '0.4rem',
+                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.2)',
+                transition: 'all 0.2s ease',
               }}
-              title="Download structured pharmacological data as JSON"
+              title="Save structured botanical pharmacological dossier as PDF"
             >
-              <Download size={14} />
-              Export JSON
+              {isGeneratingPDF ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Preparing PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download size={14} />
+                  <span>Save Report</span>
+                </>
+              )}
             </button>
 
             <button type="button" className="modal-close-btn" onClick={onClose} title="Close modal">
@@ -109,7 +149,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
 
             <div>
               <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
-                Extracted Phytochemical Compounds:
+                Active Phytochemicals:
               </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                 {card.bioactive_compounds.map((comp) => (
@@ -122,11 +162,11 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
             </div>
           </div>
 
-          {/* PubChem Chemical Structures Section */}
+          {/* Phytochemical Molecular Profiles Section */}
           {hasCompoundDetails && (
             <div style={{ background: 'rgba(15, 30, 22, 0.6)', border: '1px solid rgba(52, 211, 153, 0.2)', borderRadius: '12px', padding: '1.25rem' }}>
               <h4 style={{ fontSize: '0.9rem', color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Atom size={16} style={{ color: '#34d399' }} /> PubChem Molecular Profiles ({card.compound_details!.length})
+                <Atom size={16} style={{ color: '#34d399' }} /> Phytochemical Molecular Profiles ({card.compound_details!.length})
               </h4>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
@@ -140,7 +180,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
                       padding: '0.85rem',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.85rem'
+                      gap: '0.85rem',
                     }}
                   >
                     {cd.image_url && (
@@ -173,7 +213,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
                             alignItems: 'center',
                             gap: '0.2rem',
                             marginTop: '0.25rem',
-                            textDecoration: 'none'
+                            textDecoration: 'none',
                           }}
                         >
                           PubChem CID {cd.cid} <ExternalLink size={10} />
@@ -186,14 +226,57 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
             </div>
           )}
 
-          {/* Paper List */}
+          {/* Supporting Scientific Publications with Sort Feature */}
           <div>
-            <h4 style={{ fontSize: '0.95rem', color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <BookOpen size={16} style={{ color: '#10b981' }} /> Supporting Scientific Publications ({card.papers.length})
-            </h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '0.95rem', color: '#f8fafc', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem', margin: 0 }}>
+                <BookOpen size={16} style={{ color: '#10b981' }} /> Supporting Scientific Publications ({card.papers.length})
+              </h4>
+
+              {/* Sort Control */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <ArrowUpDown size={12} /> Sort by:
+                </span>
+                <div style={{ display: 'inline-flex', background: 'rgba(15, 33, 23, 0.8)', border: '1px solid rgba(52, 211, 153, 0.2)', borderRadius: '6px', padding: '2px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder('latest')}
+                    style={{
+                      background: sortOrder === 'latest' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
+                      color: sortOrder === 'latest' ? '#fff' : '#94a3b8',
+                      border: 'none',
+                      padding: '0.25rem 0.6rem',
+                      borderRadius: '4px',
+                      fontSize: '0.74rem',
+                      fontWeight: sortOrder === 'latest' ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Latest Year
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder('earliest')}
+                    style={{
+                      background: sortOrder === 'earliest' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
+                      color: sortOrder === 'earliest' ? '#fff' : '#94a3b8',
+                      border: 'none',
+                      padding: '0.25rem 0.6rem',
+                      borderRadius: '4px',
+                      fontSize: '0.74rem',
+                      fontWeight: sortOrder === 'earliest' ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Earliest Year
+                  </button>
+                </div>
+              </div>
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {card.papers.map((item, idx) => (
+              {sortedPapers.map((item, idx) => (
                 <div key={item.paper.id || idx} className="paper-item">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
                     <SourceBadge
@@ -231,7 +314,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
                       </span>
                     )}
                     <span style={{ fontSize: '0.75rem', background: 'rgba(255, 255, 255, 0.05)', color: '#cbd5e1', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                      Confidence: {(item.extraction.confidence_score * 100).toFixed(0)}% ({item.extraction.extraction_method})
+                      Confidence: {(item.extraction.confidence_score * 100).toFixed(0)}%
                     </span>
                   </div>
 
@@ -248,3 +331,4 @@ export const DetailModal: React.FC<DetailModalProps> = ({ card, onClose }) => {
     </div>
   );
 };
+

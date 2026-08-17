@@ -6,7 +6,7 @@ interface NavbarProps {
   health: HealthResponse | null;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ health }) => {
+export const Navbar: React.FC<NavbarProps> = ({ health: _health }) => {
   return (
     <header className="header-bar">
       <a href="/" className="brand-logo">
@@ -25,20 +25,20 @@ export const Navbar: React.FC<NavbarProps> = ({ health }) => {
       </a>
 
       <div className="header-status">
-        <div className="status-pill" title="Live PubMed & OpenAlex Literature Miners">
+        <div className="status-pill" title="Live Scientific Literature Databases Connected">
           <span className="status-indicator" />
           <Activity size={13} />
-          <span>Literature APIs Online</span>
+          <span>Literature Mining Online</span>
         </div>
 
-        <div className="status-pill" title={health?.redis_connected ? 'Redis Cache Connected' : 'In-Memory TTL Cache'}>
-          <Database size={13} style={{ color: health?.redis_connected ? 'var(--accent-mint)' : 'var(--accent-amber)' }} />
-          <span>{health?.cache_type || 'Active Cache'}</span>
+        <div className="status-pill" title="Phytochemical Profiling Active">
+          <Database size={13} style={{ color: 'var(--accent-mint)' }} />
+          <span>Biochemistry Verified</span>
         </div>
 
-        <div className="status-pill" title="AI Entity & Phytochemical Extraction Pipeline">
+        <div className="status-pill" title="Molecular Pharmacology Engine">
           <Sparkles size={13} style={{ color: 'var(--accent-mint)' }} />
-          <span>LLM / NLP Active</span>
+          <span>Pharmacology Engine</span>
         </div>
       </div>
     </header>

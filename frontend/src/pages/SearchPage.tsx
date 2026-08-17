@@ -8,11 +8,7 @@ import {
   Leaf,
   FlaskConical,
   Database,
-  Cpu,
-  BookOpen,
   AlertCircle,
-  Clock,
-  Sparkles,
   Search,
 } from 'lucide-react';
 
@@ -41,18 +37,13 @@ export const SearchPage: React.FC = () => {
     <div className="app-container">
       {/* Header Branding */}
       <header style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <div className="brand-badge">
-          <Leaf size={14} />
-          <span>Scientific Phytochemistry & Pharmacology</span>
-        </div>
-
-        <h1 style={{ fontSize: 'clamp(2.4rem, 5vw, 3.6rem)', fontWeight: 800, marginBottom: '0.8rem' }}>
-          <span className="gradient-text">BotanicAI</span>{' '}
-          <span style={{ fontWeight: 300, color: '#e2e8f0' }}>Search</span>
+        <h1 style={{ fontSize: 'clamp(2rem, 4.5vw, 3.4rem)', fontWeight: 800, marginBottom: '0.8rem' }}>
+          <span className="gradient-text">BotanicAI</span>
+          <span style={{ fontWeight: 400, color: '#e2e8f0' }}>: The Search Engine For Plant Biochemistry</span>
         </h1>
 
-        <p style={{ maxWidth: '680px', margin: '0 auto', fontSize: '1.05rem', color: '#94a3b8' }}>
-          Mine scientific literature across <strong style={{ color: '#ecfdf5' }}>PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref & bioRxiv</strong> to extract structured phytopharmacological data, bioactivities, and molecular structures.
+        <p style={{ maxWidth: '740px', margin: '0 auto', fontSize: '1.08rem', color: '#94a3b8', lineHeight: 1.6 }}>
+          Scan through over 500 million papers and find pharmacological data on any plant in seconds
         </p>
       </header>
 
@@ -88,46 +79,6 @@ export const SearchPage: React.FC = () => {
         </div>
       )}
 
-      {/* Search Meta Stats Bar */}
-      {searchResponse && !loading && (
-        <div
-          style={{
-            maxWidth: '840px',
-            margin: '0 auto 1.5rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            padding: '0.6rem 1rem',
-            background: 'rgba(10, 24, 16, 0.4)',
-            border: '1px solid rgba(52, 211, 153, 0.1)',
-            borderRadius: '12px',
-            fontSize: '0.82rem',
-            color: '#94a3b8',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-            <span style={{ color: '#f8fafc', fontWeight: 600 }}>
-              Query: <em style={{ color: '#34d399' }}>"{searchResponse.query}"</em>
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <BookOpen size={13} style={{ color: '#6ee7b7' }} />
-              {searchResponse.total_papers_found} papers analyzed
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Clock size={13} />
-              {searchResponse.execution_time_ms} ms {searchResponse.cached && '(cached)'}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <Cpu size={13} style={{ color: '#38bdf8' }} />
-            <span>Engine: {searchResponse.extraction_engine}</span>
-          </div>
-        </div>
-      )}
-
       {/* Filter Panel (when we have results or options) */}
       {searchResponse && (
         <FilterPanel
@@ -144,24 +95,13 @@ export const SearchPage: React.FC = () => {
         />
       )}
 
-      {/* Loading Skeletons */}
+      {/* Loading Progress Bar & Skeletons */}
       {loading && (
         <div style={{ marginTop: '2rem' }}>
-          <div
-            style={{
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: '#34d399',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.6rem',
-            }}
-          >
-            <Sparkles size={18} />
-            <span style={{ fontSize: '1rem', fontWeight: 600 }}>
-              Querying PubMed & OpenAlex & Running Pharmacological Extraction...
-            </span>
+          <div className="search-loading-container">
+            <div className="search-progress-track">
+              <div className="search-progress-bar" />
+            </div>
           </div>
 
           <div className="results-grid">
@@ -247,10 +187,10 @@ export const SearchPage: React.FC = () => {
               <Database size={22} />
             </div>
             <h4 style={{ fontSize: '1.15rem', color: '#fff', marginBottom: '0.5rem' }}>
-              6-Database Literature Mining
+              Millions of Papers, One Click
             </h4>
-            <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
-              Simultaneously searches PubMed, OpenAlex, Europe PMC, Semantic Scholar, Crossref, and bioRxiv for pharmacological, phytochemistry, and bioactive compound publications.
+            <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.55 }}>
+              BotanicAI scans across 6 major research databases—including PubMed, OpenAlex, and bioRxiv—to pull the exact scientific data you need. Replace dozens of open browser tabs with one instant query.
             </p>
           </div>
 
@@ -271,10 +211,10 @@ export const SearchPage: React.FC = () => {
               <FlaskConical size={22} />
             </div>
             <h4 style={{ fontSize: '1.15rem', color: '#fff', marginBottom: '0.5rem' }}>
-              Structured Phytochemistry
+              Precise Phytochemistry
             </h4>
-            <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
-              Identifies active compounds (*quercetin, rosmarinic acid, curcumin*), extract types (essential oils, ethanolic extracts), and pharmacological mechanisms.
+            <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.55 }}>
+              Plants contain thousands of molecules. BotanicAI automatically isolates the specific active compounds (like curcumin or quercetin) and links them directly to their observed health and biological effects.
             </p>
           </div>
 
@@ -295,10 +235,10 @@ export const SearchPage: React.FC = () => {
               <Leaf size={22} />
             </div>
             <h4 style={{ fontSize: '1.15rem', color: '#fff', marginBottom: '0.5rem' }}>
-              Tissue-Specific Grouping
+              Plant Morphology Filtering
             </h4>
-            <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
-              Automatically categorizes pharmacological data by plant morphology: leaves, roots, bark, seeds, flowers, rhizomes, and whole plant extracts.
+            <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.55 }}>
+              Not every part of a plant does the same thing. BotanicAI categorizes research directly by plant anatomy, showing you exactly what active compounds live in the leaves, roots, bark, seeds, or flowers.
             </p>
           </div>
         </div>
