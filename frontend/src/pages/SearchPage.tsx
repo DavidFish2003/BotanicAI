@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSearch } from '../hooks/useSearch';
-import { Navbar } from '../components/Navbar';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { PlantCard } from '../components/PlantCard';
@@ -37,11 +36,8 @@ export const SearchPage: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Top Navbar */}
-      <Navbar hasSearchResults={!!searchResponse} />
-
       {/* Header Branding */}
-      <header style={{ textAlign: 'center', marginBottom: '2.5rem', marginTop: '1rem' }}>
+      <header style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
           <OnboardingTour hasSearchResults={!!searchResponse} />
         </div>
