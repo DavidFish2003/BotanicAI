@@ -99,7 +99,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div className="search-container">
       <form onSubmit={handleSubmit}>
-        <div className="search-input-wrapper">
+        <div id="tour-search-input" className="search-input-wrapper">
           <div style={{ color: '#10b981', display: 'flex', alignItems: 'center', paddingLeft: '0.4rem' }}>
             <Leaf size={22} />
           </div>

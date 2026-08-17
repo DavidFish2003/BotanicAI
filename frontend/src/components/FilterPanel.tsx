@@ -32,7 +32,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     minConfidence > 0;
 
   return (
-    <div className="filter-section">
+    <div id="tour-morphology-filter" className="filter-section">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <SlidersHorizontal size={18} style={{ color: '#10b981' }} />

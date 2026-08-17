@@ -80,7 +80,7 @@ export const PlantCard: React.FC<PlantCardProps> = ({ card, onSelect }) => {
 
         {/* Active Phytochemicals Box */}
         {card.bioactive_compounds.length > 0 && (
-          <div className="compounds-section">
+          <div id="tour-results-phytochemistry" className="compounds-section">
             <div className="compounds-title">
               <FlaskConical size={12} style={{ color: '#34d399' }} />
               Active Phytochemicals ({card.bioactive_compounds.length})

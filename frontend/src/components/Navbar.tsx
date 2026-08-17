@@ -1,12 +1,14 @@
 import React from 'react';
 import { Sprout, Activity, Database, Sparkles } from 'lucide-react';
 import type { HealthResponse } from '../types';
+import { OnboardingTour } from './OnboardingTour';
 
 interface NavbarProps {
-  health: HealthResponse | null;
+  health?: HealthResponse | null;
+  hasSearchResults?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ health: _health }) => {
+export const Navbar: React.FC<NavbarProps> = ({ health: _health, hasSearchResults = false }) => {
   return (
     <header className="header-bar">
       <a href="/" className="brand-logo">
@@ -25,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({ health: _health }) => {
       </a>
 
       <div className="header-status">
-        <div className="status-pill" title="Live Scientific Literature Databases Connected">
+        <div id="tour-db-sources" className="status-pill" title="Live Scientific Literature Databases Connected">
           <span className="status-indicator" />
           <Activity size={13} />
           <span>Literature Mining Online</span>
@@ -40,6 +42,9 @@ export const Navbar: React.FC<NavbarProps> = ({ health: _health }) => {
           <Sparkles size={13} style={{ color: 'var(--accent-mint)' }} />
           <span>Pharmacology Engine</span>
         </div>
+
+        {/* Retrigger Tour Button */}
+        <OnboardingTour hasSearchResults={hasSearchResults} />
       </div>
     </header>
   );

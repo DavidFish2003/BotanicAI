@@ -1,9 +1,11 @@
 import React from 'react';
 import { useSearch } from '../hooks/useSearch';
+import { Navbar } from '../components/Navbar';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { PlantCard } from '../components/PlantCard';
 import { DetailModal } from '../components/DetailModal';
+import { OnboardingTour } from '../components/OnboardingTour';
 import {
   Leaf,
   FlaskConical,
@@ -35,8 +37,15 @@ export const SearchPage: React.FC = () => {
 
   return (
     <div className="app-container">
+      {/* Top Navbar */}
+      <Navbar hasSearchResults={!!searchResponse} />
+
       {/* Header Branding */}
-      <header style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+      <header style={{ textAlign: 'center', marginBottom: '2.5rem', marginTop: '1rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+          <OnboardingTour hasSearchResults={!!searchResponse} />
+        </div>
+
         <h1 style={{ fontSize: 'clamp(2rem, 4.5vw, 3.4rem)', fontWeight: 800, marginBottom: '0.8rem' }}>
           <span className="gradient-text">BotanicAI</span>
           <span style={{ fontWeight: 400, color: '#e2e8f0' }}>: The Search Engine For Plant Biochemistry</span>
@@ -170,7 +179,7 @@ export const SearchPage: React.FC = () => {
             gap: '1.5rem',
           }}
         >
-          <div className="glass-panel" style={{ padding: '1.75rem' }}>
+          <div id="tour-db-sources-fallback" className="glass-panel" style={{ padding: '1.75rem' }}>
             <div
               style={{
                 width: '42px',
@@ -194,7 +203,7 @@ export const SearchPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="glass-panel" style={{ padding: '1.75rem' }}>
+          <div id="tour-phytochemistry-fallback" className="glass-panel" style={{ padding: '1.75rem' }}>
             <div
               style={{
                 width: '42px',
@@ -218,7 +227,7 @@ export const SearchPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="glass-panel" style={{ padding: '1.75rem' }}>
+          <div id="tour-morphology-filter-fallback" className="glass-panel" style={{ padding: '1.75rem' }}>
             <div
               style={{
                 width: '42px',
